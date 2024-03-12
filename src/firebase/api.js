@@ -1,7 +1,23 @@
-import { collection, getDocs, query, doc, getDoc, addDoc, deleteDoc, onSnapshot, updateDoc, setDoc, where } from "firebase/firestore";
-import { db } from './firebase';
+import { db, doc, getDoc, getDocs, collection, query, where, addDoc, onSnapshot } from "./firebase";
+
 const collectionName = 'msgs';
 
+export const login = async (userName) => {
+    const colRef = collection(db, 'users');
+    const result = await getDocs(query(colRef, where('name', '==', userName)));
+    if (result.empty) {
+        const data = await addDoc(colRef, { name: userName });
+        return data.id;
+    }
+    const arr = getArrayFromCollection(result);
+    return arr[0].id;
+}
+
+export const getAllRooms = async () => {
+    const colRef = collection(db, 'rooms');
+    const result = await getDocs(query(colRef));
+    return getArrayFromCollection(result);
+}
 
 export const getMsgs = async () => {
     const colRef = collection(db, collectionName);
@@ -37,17 +53,37 @@ export const onMsgsUpdated = (roomId, callback) => onSnapshot(collection(db, 'ro
 });
 
 
-export const getOrCreateRoom = async (roomCode) => {
-    try {
-        const roomCodeIfExists = await getRoomById(roomCode);
-        if (!roomCodeIfExists) {
-            const docRef = doc(db, 'rooms', roomCode);
-            await setDoc(docRef, {});
-        }
-        return roomCode;
+export const getAllUsers = async () => {
+    const colRef = collection(db, 'users');
+    const r = await getDocs(query(colRef));
+    const r2 = getArrayFromCollection(r);
+    return r2;
 
-    } catch (e) {
-        console.log(e)
+}
+
+export const getUserRoomsByUserId = async (userId) => {
+    try {
+        const roomsRef = collection(db, 'rooms');
+        const result = await getDocs(query(roomsRef, where('members', 'array-contains', userId)));
+        if (result.empty) {
+            return null;
+        } else {
+            const r = getArrayFromCollection(result);
+            return r;
+        }
+    } catch (error) {
+        console.error('userId: ', userId, error);
+        return false;
+    }
+}
+
+export const createRoom = async (roomMembersIds) => {
+    try {
+        const roomsRef = collection(db, 'rooms');
+        await addDoc(roomsRef, { members: roomMembersIds });
+    } catch (error) {
+        console.error('Error al crear la room:', error);
+        return false;
     }
 }
 
@@ -55,4 +91,16 @@ export const getRoomById = async (roomId) => {
     const docRef = doc(db, 'rooms', roomId);
     const result = await getDoc(docRef);
     return result.data();
+}
+
+export const getTwoHumansRoomId = async (userId1, userId2) => {
+    const roomsRef = collection(db, 'rooms');
+    const result = await getDocs(query(roomsRef, where('members', 'array-contains', userId1)));
+    const r = getArrayFromCollection(result);
+    const room = r.find(room => room.members.includes(userId2));
+    if (!room) {
+        const data = await addDoc(roomsRef, { members: [userId1, userId2] });
+        return data.id;
+    }
+    return room.id;
 }
