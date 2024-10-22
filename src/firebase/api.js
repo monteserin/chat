@@ -1,14 +1,16 @@
-import { db, doc, getDoc, getDocs, collection, query, where, addDoc, onSnapshot } from "./firebase";
+import { db, doc, getDoc, getDocs, collection, query, where, addDoc, onSnapshot, documentId } from "./firebase";
 
 const collectionName = 'msgs';
 
 export const login = async (userName) => {
     const colRef = collection(db, 'users');
     const result = await getDocs(query(colRef, where('name', '==', userName)));
-    if (result.empty) {
+    if (result.size === 0) {
+        alert('User not found, creating new user');
         const data = await addDoc(colRef, { name: userName });
         return data.id;
     }
+
     const arr = getArrayFromCollection(result);
     return arr[0].id;
 }
@@ -58,7 +60,12 @@ export const getAllUsers = async () => {
     const r = await getDocs(query(colRef));
     const r2 = getArrayFromCollection(r);
     return r2;
+}
 
+export const getUsersByIds = async (ids) => {
+    const colRef = collection(db, 'users');
+    const result = await getDocs(query(colRef, where(documentId(), 'in', ids)));
+    return getArrayFromCollection(result);
 }
 
 export const getUserRoomsByUserId = async (userId) => {

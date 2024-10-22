@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-export { collection, doc, addDoc, getDoc, setDoc, getDocs, query, updateDoc, where, onSnapshot } from "firebase/firestore";
+export { collection, doc, addDoc, getDoc, setDoc, getDocs, query, updateDoc, where, onSnapshot, documentId } from "firebase/firestore";
 export { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, fetchSignInMethodsForEmail, sendEmailVerification } from "firebase/auth";
 
 const firebaseConfig = {

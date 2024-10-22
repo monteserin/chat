@@ -1,16 +1,19 @@
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
+import poppins from './assets/Poppins-Regular.ttf';
+import back from './assets/back.jpeg';
 
+export const GlobalStyle = createGlobalStyle`
 
-export const Box = styled.div`
-padding: 30px;
-border-right: 1px solid black;
-`
+@font-face {
+    font-family: poppins;
+    src: url(${poppins});
+}
 
-export const Msg = styled.p`
-    background-color: ${props => props.isOwnMsg ? 'green' : 'red'};
+body {
+    font-family: poppins;
+    margin: 10px;
+    padding: 0;
+    background-color: #f0f0f0;
+    background-image: url(${back});
+    }
     `;
-
-export const Error = styled.p`
-color:red;
-display: ${props => props.visible ? 'block' : 'none'};
-`;
