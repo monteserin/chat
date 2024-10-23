@@ -1,18 +1,43 @@
-import { db, doc, getDoc, getDocs, collection, query, where, addDoc, onSnapshot, documentId } from "./firebase";
+import { db, doc, getDoc, getDocs, collection, query, where, addDoc, onSnapshot, documentId, setDoc } from "./firebase";
 
 const collectionName = 'msgs';
 
-export const login = async (userName) => {
+export const login = async (mail) => {
     const colRef = collection(db, 'users');
-    const result = await getDocs(query(colRef, where('name', '==', userName)));
+    console.log(11111)
+    const result = await getDocs(query(colRef, where(documentId(), '==', mail)));
+    console.log(222222222)
     if (result.size === 0) {
         alert('User not found, creating new user');
-        const data = await addDoc(colRef, { name: userName });
-        return data.id;
+        console.log(5555, mail)
+        await setDoc(doc(colRef, mail), {});
+        return mail;
     }
 
     const arr = getArrayFromCollection(result);
     return arr[0].id;
+}
+
+const getIfMailIsPremiunOnPablomonteserincom = async (mail) => {
+    const url = `https://pablomonteserin.com/wp-json/rcp/v1/members/${mail}`;
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer YOUR_API_KEY' // Replace with your actual API key
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        return data.membership_id; // Adjust based on the actual structure of the response
+    } catch (error) {
+        console.error('Error fetching membership data:', error);
+        return null;
+    }
 }
 
 export const getAllRooms = async () => {

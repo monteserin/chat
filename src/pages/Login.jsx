@@ -4,14 +4,16 @@ import { useUserContext } from '../providers/UserProvider';
 import { Button, Input } from 'antd';
 const Login = () => {
   const [user, setUser] = useUserContext();
-  const [userName, setUserName] = useState();
+  const [mail, setMail] = useState();
   return (
     <div>
       <h2>Step 1. Log In</h2>
-      <Input placeholder='UserId' onChange={e => setUserName(e.target.value)} />
+      <Input placeholder='mail' onChange={e => setMail(e.target.value)} />
       <Button type="primary" onClick={async () => {
-        const userId = await login(userName);
-        setUser({ userName, id: userId });
+        await login(mail);
+        console.log(33333)
+        setUser({ id: mail });
+        console.log(4444)
       }}>Log in</Button>
 
       {

@@ -7,10 +7,9 @@ const Menu = () => {
   const navigation = useNavigate();
 
   const handleChatWithAdmin = () => {
-    const adminId = '5WUVaKCk68gOwQR3BbNe' // juan con j minúscula
+    const adminId = 'paramonty@gmail.com' // juan con j minúscula
     console.log('Chat with admin')
     getTwoHumansRoomId(user.id, adminId).then(roomId => {
-      console.log('111111111111-', roomId)
       navigation('/room/' + roomId);
     });
   }
